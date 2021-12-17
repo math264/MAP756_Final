@@ -1,0 +1,10 @@
+{
+"type": "FeatureCollection",
+"name": "pennDOT",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "OBJECTID": 34, "NAME": "Stockpile 21", "COUNTY_NAME": "ALLEGHENY", "COUNTY_NUMBER": "02", "DISTRICT_NO": "11", "STOCKPILE_NUMBER": "1112100", "BUILDING_NUMBER": "1112101", "WATER_SUPPLY": "None", "SEWAGE_DISPOSAL": "None", "BLDG_SQ_FT": "672", "LONGITUDE": "-79.9958332874567", "LATITUDE": "40.4518333503765", "COORDGEOCODESTATUS": null, "ID": 500, "FAC_TYPE": "STOCKPILE", "GIS_UPDATE_DATE": null, "GIS_GEOMETRY_UPDATE_DATE": null, "SE_ANNO_CAD_DATA": null, "GPID": 34 }, "geometry": { "type": "Point", "coordinates": [ -79.995833287067882, 40.451833349693977 ] } },
+{ "type": "Feature", "properties": { "OBJECTID": 35, "NAME": "Stockpile 22", "COUNTY_NAME": "ALLEGHENY", "COUNTY_NUMBER": "02", "DISTRICT_NO": "11", "STOCKPILE_NUMBER": "1112200", "BUILDING_NUMBER": null, "WATER_SUPPLY": "None", "SEWAGE_DISPOSAL": "None", "BLDG_SQ_FT": "0", "LONGITUDE": "-79.9338333083338", "LATITUDE": "40.4293333926787", "COORDGEOCODESTATUS": null, "ID": 501, "FAC_TYPE": "STOCKPILE", "GIS_UPDATE_DATE": null, "GIS_GEOMETRY_UPDATE_DATE": null, "SE_ANNO_CAD_DATA": null, "GPID": 35 }, "geometry": { "type": "Point", "coordinates": [ -79.933833307991279, 40.429333391856375 ] } },
+{ "type": "Feature", "properties": { "OBJECTID": 87, "NAME": "Tunnel District 11-3", "COUNTY_NAME": "ALLEGHENY", "COUNTY_NUMBER": "02", "DISTRICT_NO": "11", "STOCKPILE_NUMBER": "1130100", "BUILDING_NUMBER": null, "WATER_SUPPLY": "None", "SEWAGE_DISPOSAL": "None", "BLDG_SQ_FT": "0", "LONGITUDE": "-80.0272665670367", "LATITUDE": "40.4309667332953", "COORDGEOCODESTATUS": null, "ID": 506, "FAC_TYPE": "TUNNEL DISTRICT", "GIS_UPDATE_DATE": null, "GIS_GEOMETRY_UPDATE_DATE": null, "SE_ANNO_CAD_DATA": null, "GPID": 87 }, "geometry": { "type": "Point", "coordinates": [ -80.027266566856213, 40.430966732026114 ] } }
+]
+}
