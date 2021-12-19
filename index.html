@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Create interactive hover effects with Mapbox GL JS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js"></script>
+    <link
+      href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <!-- Styles CSS -->
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <!-- JS SCRIPTS -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js"></script>
+    <script src="https://api.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script>
+      mapboxgl.accessToken =
+        "pk.eyJ1IjoibWF0bWFwcGVyMjY0IiwiYSI6ImNrdnZtbXhuMzE4YXYyb3FpaWVybHA2aTUifQ.c23_QytdbCmGeFF1Og6fRw";
+      const map = new mapboxgl.Map({
+        container: "map", // Specify the container ID
+        style: "mapbox://styles/mapbox/dark-v10", // Specify which map style to use
+        center: [-79.9959, 40.4406], // Specify the starting position [lng, lat]
+        zoom: 11, // Specify the starting zoom
+      });
+
+      // LOAD DATA
+      // Load BRIDGES
+      map.on("load", () => {
+        // request our GEOJSON data
+        d3.json("./data/pgh-bridges-wgs.json").then((bridges) => {
+          addBridge(bridges);
+        });
+      });
+
+      // Load PennDOT
+      map.on("load", () => {
+        // request our GEOJSON data
+        d3.json("./data/pennDOT.geojson").then((dot) => {
+          addDot(dot);
+        });
+      });
+
+      // Load PNG
+      map.on("load", () => {
+        // Load an image from an external URL.
+        map.loadImage("./SVG/icon.png", (error, image) => {
+          if (error) throw error;
+          // Add the image to the map style.
+          map.addImage("png", image);
+        });
+      });
+      // END LOAD DATA
+
+      // ADD DATA LAYERS
+      // Add BRIDGES
+      //   Add Layer to Map
+      function addBridge(bridges) {
+        // first add the source to the map
+        map.addSource("bridge-data", {
+          type: "geojson",
+          data: bridges, // use our data as the data source
+        });
+
+        // add the GeoJSON data as a mapbox gl layer
+        map.addLayer({
+          id: "brdg",
+          type: "symbol",
+          source: "bridge-data",
+          layout: {
+            "icon-image": "png", // reference the image
+            "icon-size": 0.025,
+          },
+        });
+      }
+
+      // PENNDOT
+      //   Add Layer to Map
+      function addDot(dot) {
+        // first add the source to the map
+        map.addSource("dot-data", {
+          type: "geojson",
+          data: dot, // use our data as the data source
+        });
+
+        // add the GeoJSON data as a mapbox gl layer
+        map.addLayer({
+          id: "pa",
+          type: "circle",
+          source: "dot-data",
+          paint: {
+            "circle-color": "#00FF12",
+          },
+        });
+      }
+
+      // Add nearest-station source
+      map.addSource("nearest-station", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: [],
+        },
+      });
+      // END DATA LAYERS
+
+      // ADD INTERACTIVITY
+      const popup = new mapboxgl.Popup();
+
+      map.on("mousemove", (event) => {
+        const features = map.queryRenderedFeatures(event.point, {
+          layers: ["pa"],
+        });
+        if (!features.length) {
+          popup.remove();
+          return;
+        }
+        const feature = features[0];
+
+        popup
+          .setLngLat(feature.geometry.coordinates)
+          .setHTML(feature.properties.NAME)
+          .addTo(map);
+
+        map.getCanvas().style.cursor = features.length ? "pointer" : "";
+      });
+
+      // ADD EVENT HANDLER
+      map.on("click", (event) => {
+        // Return any features from the 'bridges' layer whenever the map is clicked
+        const bridgeFeatures = map.queryRenderedFeatures(event.point, {
+          layers: ["brdg"],
+        });
+        if (!bridgeFeatures.length) {
+          return;
+        }
+        const bridgeFeature = bridgeFeatures[0];
+
+        // Using Turf, find the nearest hospital to library clicked
+        const nearestStation = turf.nearest(bridgeFeature, dot);
+
+        // If a nearest library is not found, return early
+        if (nearestStation === null) return;
+        // Update the 'nearest-station' data source to include
+        // the nearest station
+        map.getSource("nearest-station").setData({
+          type: "FeatureCollection",
+          features: [nearestStation],
+        });
+
+        // Create a new circle layer from the 'nearest-library' data source
+        if (map.getLayer("nearest-station")) {
+          map.removeLayer("nearest-station");
+        }
+        map.addLayer(
+          {
+            id: "nearest-station",
+            type: "circle",
+            source: "nearest-station",
+            paint: {
+              "circle-radius": 12,
+              "circle-color": "#486DE0",
+            },
+          },
+          "hospitals"
+        );
+      });
+    </script>
+  </body>
+</html>
