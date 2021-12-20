@@ -4,11 +4,7 @@
     <meta charset="utf-8" />
     <title>Create interactive hover effects with Mapbox GL JS</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.js"></script>
-    <link
-      href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css"
-      rel="stylesheet"
-    />
+  
     <!-- Styles CSS -->
     <link
       href="https://api.mapbox.com/mapbox-gl-js/v2.6.1/mapbox-gl.css"
@@ -114,21 +110,24 @@
             "circle-color": "#00FF12",
           },
         });
+        eventHandler(dot)
       }
 
-      // Add nearest-station source
-      map.addSource("nearest-station", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: [],
-        },
-      });
+      // StationLayer
+      map.on("load", () => {
+         // Add nearest-station source
+          map.addSource("nearest-station", {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: [],
+            },
+          });
+        })
       // END DATA LAYERS
 
       // ADD INTERACTIVITY
       const popup = new mapboxgl.Popup();
-
       map.on("mousemove", (event) => {
         const features = map.queryRenderedFeatures(event.point, {
           layers: ["pa"],
@@ -148,6 +147,7 @@
       });
 
       // ADD EVENT HANDLER
+      function eventHandler(data) {
       map.on("click", (event) => {
         // Return any features from the 'bridges' layer whenever the map is clicked
         const bridgeFeatures = map.queryRenderedFeatures(event.point, {
@@ -159,7 +159,7 @@
         const bridgeFeature = bridgeFeatures[0];
 
         // Using Turf, find the nearest hospital to library clicked
-        const nearestStation = turf.nearest(bridgeFeature, dot);
+        const nearestStation = turf.nearest(bridgeFeature, data);
 
         // If a nearest library is not found, return early
         if (nearestStation === null) return;
@@ -184,9 +184,10 @@
               "circle-color": "#486DE0",
             },
           },
-          "hospitals"
+          "pa"
         );
       });
+    }
     </script>
   </body>
 </html>
